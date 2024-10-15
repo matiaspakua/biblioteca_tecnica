@@ -51,7 +51,6 @@ function actualizarFormulario(e) {
     actualizarFechaDevolucion(PESTANIA_PRESTAMOS);
   }
   
-  // Si el formulario es el de devolución
   if (currentFormId === FORM_DEVOLUCION_ID) {
     for (var i = 0; i < data.length; i++) {
       if (data[i][0] === libroSeleccionado) {
@@ -64,8 +63,6 @@ function actualizarFormulario(e) {
       }
     }
   }
-  
-  // Después de actualizar el estado, actualizar los dropdowns
   actualizarDropdowns();
 }
   
@@ -77,22 +74,22 @@ function actualizarDropdowns() {
 
   var librosLibres = data
     .map(function(item, index) {
-      return status[index][0] === ESTADO_LIBRE ? item[0] : null; // Si el estatus es "libre", retornar el elemento
+      return status[index][0] === ESTADO_LIBRE ? item[0] : null; 
     })
-    .filter(Boolean); // Eliminar los valores nulos o no válidos
+    .filter(Boolean); 
   
   var librosPrestados = data
     .map(function(item, index) {
-      return status[index][0] === ESTADO_PRESTADO ? item[0] : null; // Si el estatus es "prestado", retornar el elemento
+      return status[index][0] === ESTADO_PRESTADO ? item[0] : null; 
     })
-    .filter(Boolean); // Eliminar los valores nulos o no válidos
+    .filter(Boolean); 
 
   var itemsSolicitud = formSolicitud.getItems(FormApp.ItemType.LIST); 
   var dropdownSolicitud = itemsSolicitud[0].asListItem();
   dropdownSolicitud.setChoiceValues(librosLibres);
 
-  var itemsDevolucion = formDevolucion.getItems(FormApp.ItemType.LIST); // Ajustar tipo si es dropdown
-  var dropdownDevolucion = itemsDevolucion[0].asListItem(); // Ajustar índice según la posición
+  var itemsDevolucion = formDevolucion.getItems(FormApp.ItemType.LIST); 
+  var dropdownDevolucion = itemsDevolucion[0].asListItem(); 
   dropdownDevolucion.setChoiceValues(librosPrestados);
   
 }
@@ -100,7 +97,6 @@ function actualizarDropdowns() {
 function actualizarFechaDevolucion(sheet) {
   var fechaDevolucion = new Date();
   fechaDevolucion.setDate(fechaDevolucion.getDate() + DIAS_PRESTAMO);
-  Logger.log(fechaDevolucion);
 
   var encabezados = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
   var columnaFechaDevolucion = encabezados.indexOf("Fecha devolución") + 1;
