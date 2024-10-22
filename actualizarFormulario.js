@@ -140,9 +140,9 @@ function generarReporteLibros() {
     var tituloLibro = librosData[i][tituloCol];
     var estadoLibro = librosData[i][estadoCol];
     
-    if (estadoLibro === "libre") {
+    if (estadoLibro === ESTADO_LIBRE) {
       librosLibres.push(tituloLibro);
-    } else if (estadoLibro === "prestado") {
+    } else if (estadoLibro === ESTADO_PRESTADO) {
       var fechaDevolucion = buscarFechaDevolucion(prestamosData, tituloLibro);
       librosPrestados.push(tituloLibro + " - Fecha de devolución: " + fechaDevolucion);
     }
