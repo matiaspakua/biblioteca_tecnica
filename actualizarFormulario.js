@@ -8,6 +8,8 @@ const PESTANIA_LIBROS = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('li
 const PESTANIA_PRESTAMOS = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('prestamos');
 const ESTADO_PRESTADO = 'prestado';
 const ESTADO_LIBRE = 'libre';
+const ESTADO_LIBRO = 2;
+const TITULO_LIBRO = 0;
 
 
 function actualizarFormulario(e) {
@@ -15,6 +17,7 @@ function actualizarFormulario(e) {
   for (var i = 0; i<e.values.length; i++){
 
     var tipo = e.values[i]; 
+  
     if(tipo === 'Préstamo'){
       currentFormId = FORM_SOLICITUD_ID;
     }
@@ -26,7 +29,8 @@ function actualizarFormulario(e) {
 
       var reporteLibros = generarReporteLibros();
     
-      // Enviar el reporte por correo al solicitante
+      var emailSolicitante = e.values[i+1];
+      Logger.log(emailSolicitante);
       MailApp.sendEmail(emailSolicitante, "Estado de los libros en la biblioteca", reporteLibros);
       return;
     }
@@ -122,39 +126,30 @@ function actualizarFechaDevolucion(sheet) {
   }
 }
 
-// Función para generar el reporte de libros
+
 function generarReporteLibros() {
 
-  // Obtener los datos de ambas hojas
   var librosData = PESTANIA_LIBROS.getDataRange().getValues();
   var prestamosData = PESTANIA_PRESTAMOS.getDataRange().getValues();
-  
-  // Variables para almacenar libros "libres" y "prestados"
   var librosLibres = [];
   var librosPrestados = [];
+  var tituloCol = TITULO_LIBRO;
+  var estadoCol = ESTADO_LIBRO;
 
-  // Índices de columnas (basado en la hoja "libros")
-  var tituloCol = 0; // Columna A: Título del libro
-  var estadoCol = 2; // Columna C: Estado ("libre" o "prestado")
-
-  // Iterar sobre los libros y clasificar entre libres y prestados
-  for (var i = 1; i < librosData.length; i++) { // Empezar en 1 para saltar los encabezados
+  for (var i = 1; i < librosData.length; i++) { 
     var tituloLibro = librosData[i][tituloCol];
     var estadoLibro = librosData[i][estadoCol];
     
     if (estadoLibro === "libre") {
       librosLibres.push(tituloLibro);
     } else if (estadoLibro === "prestado") {
-      // Buscar la fecha de devolución del libro prestado en la hoja "prestamos"
       var fechaDevolucion = buscarFechaDevolucion(prestamosData, tituloLibro);
       librosPrestados.push(tituloLibro + " - Fecha de devolución: " + fechaDevolucion);
     }
   }
 
-  // Construir el reporte de libros
   var reporte = "Reporte de estado de libros en la biblioteca:\n\n";
   
-  // Listar libros libres
   if (librosLibres.length > 0) {
     reporte += "Libros libres:\n";
     reporte += librosLibres.join("\n") + "\n\n";
@@ -162,7 +157,6 @@ function generarReporteLibros() {
     reporte += "No hay libros disponibles en este momento.\n\n";
   }
 
-  // Listar libros prestados
   if (librosPrestados.length > 0) {
     reporte += "Libros prestados:\n";
     reporte += librosPrestados.join("\n") + "\n";
@@ -173,16 +167,14 @@ function generarReporteLibros() {
   return reporte;
 }
 
-// Función para buscar la fecha de devolución de un libro en la hoja "prestamos"
 function buscarFechaDevolucion(prestamosData, tituloLibro) {
-  var fechaDevolucionCol = prestamosData[0].length - 1; // Última columna para fecha de devolución
+  var fechaDevolucionCol = prestamosData[0].length - 1; 
 
-  // Iterar sobre la hoja "prestamos" para encontrar el último préstamo del libro
   for (var i = prestamosData.length - 1; i >= 1; i--) {
-    if (prestamosData[i][0] === tituloLibro) { // Columna 0 tiene el título del libro
-      return prestamosData[i][fechaDevolucionCol]; // Retorna la fecha de devolución
+    if (prestamosData[i][0] === tituloLibro) { 
+      return prestamosData[i][fechaDevolucionCol]; 
     }
   }
   
-  return "Fecha no disponible"; // Si no se encuentra el préstamo
+  return "Fecha no disponible";
 }
