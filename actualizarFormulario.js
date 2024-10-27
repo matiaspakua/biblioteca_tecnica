@@ -168,13 +168,15 @@ function generarReporteLibros() {
 }
 
 function buscarFechaDevolucion(prestamosData, tituloLibro) {
+  Logger.log(prestamosData);
   var fechaDevolucionCol = prestamosData[0].length - 1; 
 
   for (var i = prestamosData.length - 1; i >= 1; i--) {
+    Logger.log(prestamosData[i][0]);
+    Logger.log(tituloLibro);
     if (prestamosData[i][0] === tituloLibro) { 
       return prestamosData[i][fechaDevolucionCol]; 
     }
   }
-  
   return "Fecha no disponible";
 }
